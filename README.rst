@@ -1,4 +1,4 @@
-pymodaq_plugins_template
+pymodaq_plugins_Kern
 ########################
 
 .. the following must be adapted to your developed package, links to pypi, github  description...
@@ -49,27 +49,18 @@ Below is the list of instruments included in this plugin
 Actuators
 +++++++++
 
-* **yyy**: control of yyy actuators
-* **xxx**: control of xxx actuators
 
 Viewer0D
 ++++++++
 
-* **yyy**: control of yyy 0D detector
-* **xxx**: control of xxx 0D detector
+* **daq_0Dviewer_Kern_16K0_05**: control of FBK 16K0.05 0D detector (weight balance)
 
 Viewer1D
 ++++++++
 
-* **yyy**: control of yyy 1D detector
-* **xxx**: control of xxx 1D detector
-
 
 Viewer2D
 ++++++++
-
-* **yyy**: control of yyy 2D detector
-* **xxx**: control of xxx 2D detector
 
 
 PID Models
@@ -83,6 +74,6 @@ Extensions
 Installation instructions
 =========================
 
-* PyMoDAQ’s version.
-* Operating system’s version.
-* What manufacturer’s drivers should be installed to make this plugin run?
+* PyMoDAQ’s version : 5
+* Operating system’s version : Windows 10 Professional
+* No manufacturer’s driver need to be installed to make this plugin run.
