@@ -104,17 +104,17 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         initialized: bool
             False if initialization failed otherwise True
         """
+        serial_port="COM1"
+        baudrate = 9600
 
         if self.is_master:
             self.controller = KERN_16K0_05()  #instantiate you driver with whatever arguments are needed
-            self.controller.connect(serial_port="COM1", baudrate=9600) # call eventual methods
+            self.controller.connect(serial_port, baudrate) # call eventual methods
             initialized = True
             try :
                 self.controller.serial.read()
             except serial.PortNotOpenError:
                 initialized = False
-
-            # initialized = self.controller.a_method_or_atttribute_to_check_if_init()  # TODO
         else:
             self.controller = controller
             initialized = True
@@ -131,7 +131,6 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
     def close(self):
         """Terminate the communication protocol"""
-        ## TODO for your custom plugin
         if self.is_master:
             self.controller.disconnect()
 
@@ -146,19 +145,12 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         kwargs: dict
             others optionals arguments
         """
-        ## TODO for your custom plugin: you should choose EITHER the synchrone or the asynchrone version following
 
         # synchrone version (blocking function)
         data_tot = self.controller.current_value()
         self.dte_signal.emit(DataToExport(name='myplugin',
                                           data=[DataFromPlugins(name='Mock1', data=data_tot,
                                                                 dim='Data0D', labels=['dat0', 'data1'])]))
-        #########################################################
-
-        # asynchrone version (non-blocking function with callback)
-        raise NotImplementedError  # when writing your own plugin remove this line
-        self.controller.your_method_to_start_a_grab_snap(self.callback)  # when writing your own plugin replace this line
-        #########################################################
 
 
     def callback(self):
