@@ -7,9 +7,32 @@ from pymodaq_gui.parameter import Parameter
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.data import DataFromPlugins
 
-class PythonWrapperOfYourInstrument:
-    #  TODO Replace this fake class with the import of the real python wrapper of your instrument
-    pass
+import serial
+
+class KERN_16K0_05:
+
+    serial: serial.Serial
+
+    def __init__(self):
+        self.serial = serial.Serial()
+
+    def connect(self, serial_port:str, baudrate:int):
+        self.serial = serial.Serial(serial_port, baudrate)
+
+    def current_value(self):
+        ser = self.serial
+        ser.reset_input_buffer()
+        new_complete_byte = ser.read(18)
+
+        ba = bytearray(new_complete_byte)
+        new_ba = ba[4:12]
+        new_bytes = bytes(new_ba)
+        new_value = float(new_bytes)
+
+        return new_value
+
+    def disconnect(self):
+        self.serial.close()
 
 # TODO:
 # (1) change the name of the following class to DAQ_0DViewer_TheNameOfYourChoice
@@ -18,7 +41,7 @@ class PythonWrapperOfYourInstrument:
 # (3) this file should then be put into the right folder, namely IN THE FOLDER OF THE PLUGIN YOU ARE DEVELOPING:
 #     pymodaq_plugins_my_plugin/daq_viewer_plugins/plugins_0D
 
-class DAQ_0DViewer_Template(DAQ_Viewer_base):
+class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     """ Instrument plugin class for a OD viewer.
     
     This object inherits all functionalities to communicate with PyMoDAQ’s DAQ_Viewer module through inheritance via
@@ -47,7 +70,7 @@ class DAQ_0DViewer_Template(DAQ_Viewer_base):
     def ini_attributes(self):
         #  TODO declare the type of the wrapper (and assign it to self.controller) you're going to use for easy
         #  autocompletion
-        self.controller: PythonWrapperOfYourInstrument = None
+        self.controller: KERN_16K0_05 = None
 
         #TODO declare here attributes you want/need to init with a default value
         pass
@@ -82,11 +105,16 @@ class DAQ_0DViewer_Template(DAQ_Viewer_base):
             False if initialization failed otherwise True
         """
 
-        raise NotImplementedError  # TODO when writing your own plugin remove this line and modify the one below
         if self.is_master:
-            self.controller = PythonWrapperOfYourInstrument()  #instantiate you driver with whatever arguments are needed
-            self.controller.open_communication() # call eventual methods
-            initialized = self.controller.a_method_or_atttribute_to_check_if_init()  # TODO
+            self.controller = KERN_16K0_05()  #instantiate you driver with whatever arguments are needed
+            self.controller.connect(serial_port="COM1", baudrate=9600) # call eventual methods
+            initialized = True
+            try :
+                self.controller.serial.read()
+            except serial.PortNotOpenError:
+                initialized = False
+
+            # initialized = self.controller.a_method_or_atttribute_to_check_if_init()  # TODO
         else:
             self.controller = controller
             initialized = True
@@ -104,10 +132,8 @@ class DAQ_0DViewer_Template(DAQ_Viewer_base):
     def close(self):
         """Terminate the communication protocol"""
         ## TODO for your custom plugin
-        raise NotImplementedError  # when writing your own plugin remove this line
         if self.is_master:
-            #  self.controller.your_method_to_terminate_the_communication()  # when writing your own plugin replace this line
-            ...
+            self.controller.disconnect()
 
     def grab_data(self, Naverage=1, **kwargs):
         """Start a grab from the detector
@@ -123,8 +149,7 @@ class DAQ_0DViewer_Template(DAQ_Viewer_base):
         ## TODO for your custom plugin: you should choose EITHER the synchrone or the asynchrone version following
 
         # synchrone version (blocking function)
-        raise NotImplementedError  # when writing your own plugin remove this line
-        data_tot = self.controller.your_method_to_start_a_grab_snap()
+        data_tot = self.controller.current_value()
         self.dte_signal.emit(DataToExport(name='myplugin',
                                           data=[DataFromPlugins(name='Mock1', data=data_tot,
                                                                 dim='Data0D', labels=['dat0', 'data1'])]))
