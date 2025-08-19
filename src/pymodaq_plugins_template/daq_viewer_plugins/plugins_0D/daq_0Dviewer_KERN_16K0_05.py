@@ -120,11 +120,11 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
             initialized = True
 
         # TODO for your custom plugin (optional) initialize viewers panel with the future type of data
-        self.dte_signal_temp.emit(DataToExport(name='myplugin',
-                                               data=[DataFromPlugins(name='Mock1',
-                                                                    data=[np.array([0]), np.array([0])],
+        self.dte_signal_temp.emit(DataToExport(name='Kern plugin',
+                                               data=[DataFromPlugins(name='KERN FKB 16K0.05',
+                                                                    data=[np.array([0])],
                                                                     dim='Data0D',
-                                                                    labels=['Mock1', 'label2'])]))
+                                                                    labels=['mesured weight'])]))
 
         info = "Whatever info you want to log"
         return info, initialized
