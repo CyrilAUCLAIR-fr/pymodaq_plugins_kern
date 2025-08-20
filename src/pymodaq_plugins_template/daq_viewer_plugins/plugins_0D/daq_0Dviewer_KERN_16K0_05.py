@@ -128,7 +128,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
                                                data=[DataFromPlugins(name='KERN FKB 16K0.05',
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
-                                                                    labels=['mesured weight'])]))
+                                                                    labels=['mesured weight (g)'])]))
 
         info = "Whatever info you want to log"
         return info, initialized
@@ -154,8 +154,10 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         try:
             data_tot = self.controller.current_value()
             self.dte_signal.emit(DataToExport(name='myplugin',
-                                              data=[DataFromPlugins(name='Mock1', data=data_tot,
-                                                                    dim='Data0D', labels=['dat0', 'data1'])]))
+                                              data=[DataFromPlugins(name='KERN FKB 16K0.05',
+                                                                    data=data_tot,
+                                                                    dim='Data0D',
+                                                                    labels=['mesured weight (g)'])]))
         except ValueError as ve:
             if ve.__str__()[0:34] == "could not convert string to float:":
                 print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
