@@ -11,6 +11,8 @@ import serial
 import serial.tools.list_ports
 
 class KERN_16K0_05:
+    # At the time of writing this code, the documentation of this instrument was available on URL
+    # https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
     serial: serial.Serial
 
@@ -18,14 +20,25 @@ class KERN_16K0_05:
         self.serial = serial.Serial()
 
     def connect(self, serial_port:str, baudrate:int):
+        """instrument initialization (including serial port and baud rate verification)"""
         self.serial = serial.Serial(serial_port, baudrate)
+        initial_timeout = self.serial.timeout
         self.serial.timeout = 1  # timeout of the serial port = 1s
-        test_reading = self.serial.read()
+        test_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+        self.serial.timeout = initial_timeout
         ba = bytearray(test_reading)
-        initialized = len(ba) >= 1
+        initialized = len(ba) != 0
+        if initialized:
+            try:
+                self.current_value()
+            except ValueError as ve:
+                if ve.__str__()[0:34] == "could not convert string to float:":
+                    print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
+                    initialized = False
         return initialized
 
     def current_value(self):
+        """once the instrument is initialized, return its current measured value"""
         ser = self.serial
         ser.reset_input_buffer()
         new_complete_byte = ser.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
@@ -38,6 +51,7 @@ class KERN_16K0_05:
         return new_value
 
     def disconnect(self):
+        """close the instrument communication"""
         self.serial.close()
 
 # At the time of writing this code, the documentation of this instrument was available on URL
@@ -119,11 +133,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
         if self.is_master:
             self.controller = KERN_16K0_05()
-            # self.controller.connect(serial_port, baudrate)
-            # self.controller.serial.timeout = 1 # timeout of the serial port = 1s
-            # test_reading = self.controller.serial.read()
-            # ba = bytearray(test_reading)
-            initialized = self.controller.connect(serial_port, baudrate) # len(ba) >= 1
+            initialized = self.controller.connect(serial_port, baudrate)
         else:
             self.controller = controller
             initialized = True
@@ -155,16 +165,12 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         """
 
         # synchrone version (blocking function)
-        try:
-            data_tot = self.controller.current_value()
-            self.dte_signal.emit(DataToExport(name='myplugin',
-                                              data=[DataFromPlugins(name='KERN FKB 16K0.05',
-                                                                    data=data_tot,
-                                                                    dim='Data0D',
-                                                                    labels=['mesured weight (g)'])]))
-        except ValueError as ve:
-            if ve.__str__()[0:34] == "could not convert string to float:":
-                print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
+        data_tot = self.controller.current_value()
+        self.dte_signal.emit(DataToExport(name='myplugin',
+                                        data=[DataFromPlugins(name='KERN FKB 16K0.05',
+                                                                data=data_tot,
+                                                                dim='Data0D',
+                                                                labels=['mesured weight (g)'])]))
 
 
 
