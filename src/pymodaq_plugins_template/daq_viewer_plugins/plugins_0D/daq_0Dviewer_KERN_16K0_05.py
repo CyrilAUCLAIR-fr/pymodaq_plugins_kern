@@ -8,6 +8,8 @@ from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, como
 from pymodaq.utils.data import DataFromPlugins
 
 import serial
+import serial.tools.list_ports
+import time
 
 class KERN_16K0_05:
 
@@ -22,10 +24,10 @@ class KERN_16K0_05:
     def current_value(self):
         ser = self.serial
         ser.reset_input_buffer()
-        new_complete_byte = ser.read(18)
+        new_complete_byte = ser.read(18) # cf. section 7.5.1 "Description of the data transfer" of the product documentation
 
         ba = bytearray(new_complete_byte)
-        new_ba = ba[4:12]
+        new_ba = ba[4:12] # ditto
         new_bytes = bytes(new_ba)
         new_value = float(new_bytes)
 
@@ -34,12 +36,8 @@ class KERN_16K0_05:
     def disconnect(self):
         self.serial.close()
 
-# TODO:
-# (1) change the name of the following class to DAQ_0DViewer_TheNameOfYourChoice
-# (2) change the name of this file to daq_0Dviewer_TheNameOfYourChoice ("TheNameOfYourChoice" should be the SAME
-#     for the class name and the file name.)
-# (3) this file should then be put into the right folder, namely IN THE FOLDER OF THE PLUGIN YOU ARE DEVELOPING:
-#     pymodaq_plugins_my_plugin/daq_viewer_plugins/plugins_0D
+# At the time of writing this code, the documentation of this product was available on URL
+# https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
 class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     """ Instrument plugin class for a OD viewer.
@@ -59,12 +57,20 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     controller: object
         The particular object that allow the communication with the hardware, in general a python wrapper around the
          hardware library.
-         
+
     # TODO add your particular attributes here if any
 
     """
+    available_serial_ports = []  # list of all available serial port on the used computer
+    # filling of this listing :
+    for port in serial.tools.list_ports.comports():
+        available_serial_ports.append(port.name)
+
+    possible_baudrates = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the product documentation)
+
     params = comon_parameters+[
-        ## TODO for your custom plugin: elements to be added here as dicts in order to control your custom stage
+        {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
+        {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list', 'limits': possible_baudrates}
         ]
 
     def ini_attributes(self):
@@ -104,17 +110,16 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         initialized: bool
             False if initialization failed otherwise True
         """
-        serial_port="COM1"
-        baudrate = 9600
+        serial_port = self.settings['serial_port'] #"COM1"
+        baudrate = self.settings['baudrate'] #9600
 
         if self.is_master:
-            self.controller = KERN_16K0_05()  #instantiate you driver with whatever arguments are needed
-            self.controller.connect(serial_port, baudrate) # call eventual methods
-            initialized = True
-            try :
-                self.controller.serial.read()
-            except serial.PortNotOpenError:
-                initialized = False
+            self.controller = KERN_16K0_05()
+            self.controller.connect(serial_port, baudrate)
+            self.controller.serial.timeout = 1 # timeout of the serial port = 1s
+            test_reading = self.controller.serial.read()
+            ba = bytearray(test_reading)
+            initialized = len(ba) >= 1
         else:
             self.controller = controller
             initialized = True
@@ -147,10 +152,15 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         """
 
         # synchrone version (blocking function)
-        data_tot = self.controller.current_value()
-        self.dte_signal.emit(DataToExport(name='myplugin',
-                                          data=[DataFromPlugins(name='Mock1', data=data_tot,
-                                                                dim='Data0D', labels=['dat0', 'data1'])]))
+        try:
+            data_tot = self.controller.current_value()
+            self.dte_signal.emit(DataToExport(name='myplugin',
+                                              data=[DataFromPlugins(name='Mock1', data=data_tot,
+                                                                    dim='Data0D', labels=['dat0', 'data1'])]))
+        except ValueError as ve:
+            if ve.__str__()[0:34] == "could not convert string to float:":
+                print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
+
 
 
     def callback(self):
