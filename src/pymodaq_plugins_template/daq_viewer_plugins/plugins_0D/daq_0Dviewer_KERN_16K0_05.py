@@ -19,11 +19,16 @@ class KERN_16K0_05:
 
     def connect(self, serial_port:str, baudrate:int):
         self.serial = serial.Serial(serial_port, baudrate)
+        self.serial.timeout = 1  # timeout of the serial port = 1s
+        test_reading = self.serial.read()
+        ba = bytearray(test_reading)
+        initialized = len(ba) >= 1
+        return initialized
 
     def current_value(self):
         ser = self.serial
         ser.reset_input_buffer()
-        new_complete_byte = ser.read(18) # cf. section 7.5.1 "Description of the data transfer" of the product documentation
+        new_complete_byte = ser.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
 
         ba = bytearray(new_complete_byte)
         new_ba = ba[4:12] # ditto
@@ -35,7 +40,7 @@ class KERN_16K0_05:
     def disconnect(self):
         self.serial.close()
 
-# At the time of writing this code, the documentation of this product was available on URL
+# At the time of writing this code, the documentation of this instrument was available on URL
 # https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
 class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
@@ -62,7 +67,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     # TODO add your particular attributes here if any
 
     """
-    available_serial_ports = []  # list of all available serial port on the used computer
+    available_serial_ports = [] # list of all available serial port on the used computer
     # filling of this listing :
     for port in serial.tools.list_ports.comports():
         available_serial_ports.append(port.name)
@@ -78,7 +83,6 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         #  autocompletion
         self.controller: KERN_16K0_05 = None
 
-        #TODO declare here attributes you want/need to init with a default value
         pass
 
     def commit_settings(self, param: Parameter):
@@ -115,16 +119,15 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
         if self.is_master:
             self.controller = KERN_16K0_05()
-            self.controller.connect(serial_port, baudrate)
-            self.controller.serial.timeout = 1 # timeout of the serial port = 1s
-            test_reading = self.controller.serial.read()
-            ba = bytearray(test_reading)
-            initialized = len(ba) >= 1
+            # self.controller.connect(serial_port, baudrate)
+            # self.controller.serial.timeout = 1 # timeout of the serial port = 1s
+            # test_reading = self.controller.serial.read()
+            # ba = bytearray(test_reading)
+            initialized = self.controller.connect(serial_port, baudrate) # len(ba) >= 1
         else:
             self.controller = controller
             initialized = True
 
-        # TODO for your custom plugin (optional) initialize viewers panel with the future type of data
         self.dte_signal_temp.emit(DataToExport(name='Kern plugin',
                                                data=[DataFromPlugins(name='KERN FKB 16K0.05',
                                                                     data=[np.array([0])],
