@@ -9,7 +9,6 @@ from pymodaq.utils.data import DataFromPlugins
 
 import serial
 import serial.tools.list_ports
-import time
 
 class KERN_16K0_05:
 
@@ -45,12 +44,14 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     This object inherits all functionalities to communicate with PyMoDAQ’s DAQ_Viewer module through inheritance via
     DAQ_Viewer_base. It makes a bridge between the DAQ_Viewer module and the Python wrapper of a particular instrument.
 
-    TODO Complete the docstring of your plugin with:
-        * The set of instruments that should be compatible with this instrument plugin.
-        * With which instrument it has actually been tested.
-        * The version of PyMoDAQ during the test.
-        * The version of the operating system.
-        * Installation instructions: what manufacturer’s drivers should be installed to make it run?
+    This instrument plugin concerns the FKB 16K0.05 precision balance of KERN & SOHN instruments (and has been tested
+    with such instrument).
+
+    It has been tested with PyMoDAQ 5.
+
+    Operating system’s version : Windows 10 Professional
+
+    No manufacturer's driver need to be installed to make it run.
 
     Attributes:
     -----------
