@@ -14,6 +14,9 @@ class KERN_16K0_05:
     # At the time of writing this code (August 2025), the documentation of this instrument was available on URL
     # https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
+    POSSIBLE_BAUD_RATES = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the instrument documentation)
+    DEFAULT_BAUD_RATE = POSSIBLE_BAUD_RATES[2]
+
     serial: serial.Serial
 
     def __init__(self):
@@ -21,6 +24,7 @@ class KERN_16K0_05:
 
     def last_data_transfer_bytearray(self):
         """returns in a bytearray the last data transfer in buffer from the instrument"""
+        self.serial.reset_input_buffer()
         dt_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
         return bytearray(dt_reading)
 
@@ -29,7 +33,6 @@ class KERN_16K0_05:
         self.serial = serial.Serial(serial_port, baudrate)
         initial_timeout = self.serial.timeout
         self.serial.timeout = 1  # timeout of the serial port = 1s
-        self.serial.reset_input_buffer()
         ldtba = self.last_data_transfer_bytearray()
         self.serial.timeout = initial_timeout
         initialized = len(ldtba) != 0
@@ -45,8 +48,6 @@ class KERN_16K0_05:
 
     def current_value(self):
         """once the instrument is initialized, return its current measured value"""
-        ser = self.serial
-        ser.reset_input_buffer()
         ldtba = self.last_data_transfer_bytearray()
         new_ba = ldtba[4:13] # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
         return float(new_ba)
@@ -58,9 +59,6 @@ class KERN_16K0_05:
 
 class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     """ Instrument plugin class for a OD viewer.
-    
-    This object inherits all functionalities to communicate with PyMoDAQ’s DAQ_Viewer module through inheritance via
-    DAQ_Viewer_base. It makes a bridge between the DAQ_Viewer module and the Python wrapper of a particular instrument.
 
     This instrument plugin concerns the FKB 16K0.05 precision balance of KERN & SOHN instruments (and has been tested
     with such instrument).
@@ -85,11 +83,9 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     for port in serial.tools.list_ports.comports():
         available_serial_ports.append(port.name)
 
-    possible_baudrates = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the product documentation)
-
     params = comon_parameters+[
         {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
-        {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list', 'limits': possible_baudrates}
+        {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list', 'limits': KERN_16K0_05.POSSIBLE_BAUD_RATES, 'value': KERN_16K0_05.DEFAULT_BAUD_RATE}
         ]
 
     def ini_attributes(self):
