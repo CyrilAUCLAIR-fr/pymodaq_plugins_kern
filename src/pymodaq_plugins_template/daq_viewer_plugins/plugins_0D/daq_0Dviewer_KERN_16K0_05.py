@@ -29,6 +29,7 @@ class KERN_16K0_05:
         self.serial = serial.Serial(serial_port, baudrate)
         initial_timeout = self.serial.timeout
         self.serial.timeout = 1  # timeout of the serial port = 1s
+        self.serial.reset_input_buffer()
         ldtba = self.last_data_transfer_bytearray()
         self.serial.timeout = initial_timeout
         initialized = len(ldtba) != 0
@@ -39,6 +40,7 @@ class KERN_16K0_05:
                 if ve.__str__()[0:34] == "could not convert string to float:":
                     print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
                     initialized = False
+        else : print("DATA GRABING : no data from the instrument. Maybe the serial port is wrong ?  ")
         return initialized
 
     def current_value(self):
@@ -140,7 +142,6 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
                                                                     labels=['mesured weight (g)'])]))
-
         info = "Whatever info you want to log"
         return info, initialized
 
