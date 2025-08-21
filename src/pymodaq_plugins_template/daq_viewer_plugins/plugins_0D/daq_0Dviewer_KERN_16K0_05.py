@@ -11,7 +11,7 @@ import serial
 import serial.tools.list_ports
 
 class KERN_16K0_05:
-    # At the time of writing this code, the documentation of this instrument was available on URL
+    # At the time of writing this code (August 2025), the documentation of this instrument was available on URL
     # https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
     serial: serial.Serial
@@ -20,7 +20,7 @@ class KERN_16K0_05:
         self.serial = serial.Serial()
 
     def last_data_transfer_bytearray(self):
-        """returns in a bytearray the last data transfert in buffer from the instrument"""
+        """returns in a bytearray the last data transfer in buffer from the instrument"""
         dt_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
         return bytearray(dt_reading)
 
@@ -52,9 +52,7 @@ class KERN_16K0_05:
     def disconnect(self):
         """close the instrument communication"""
         self.serial.close()
-
-# At the time of writing this code, the documentation of this instrument was available on URL
-# https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
+######################################
 
 class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     """ Instrument plugin class for a OD viewer.
@@ -127,8 +125,8 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         initialized: bool
             False if initialization failed otherwise True
         """
-        serial_port = self.settings['serial_port'] #"COM1"
-        baudrate = self.settings['baudrate'] #9600
+        serial_port = self.settings['serial_port']
+        baudrate = self.settings['baudrate']
 
         if self.is_master:
             self.controller = KERN_16K0_05()
