@@ -92,7 +92,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         if warning != "":
             print(warning)
 
-        self.dte_signal_temp.emit(DataToExport(name='Kern plugin',
+        self.dte_signal_temp.emit(DataToExport(name='KERN plugin',
                                                data=[DataFromPlugins(name='KERN FKB 16K0.05',
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
@@ -119,7 +119,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
         # synchrone version (blocking function)
         data_tot = self.controller.current_value()
-        self.dte_signal.emit(DataToExport(name='myplugin',
+        self.dte_signal.emit(DataToExport(name='KERN plugin',
                                         data=[DataFromPlugins(name='KERN FKB 16K0.05',
                                                                 data=data_tot,
                                                                 dim='Data0D',
