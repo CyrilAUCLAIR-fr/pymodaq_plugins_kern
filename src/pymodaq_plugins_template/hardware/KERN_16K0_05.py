@@ -19,22 +19,25 @@ class KERN_16K0_05:
         return bytearray(dt_reading)
 
     def connect(self, serial_port:str, baudrate:int):
-        """instrument initialization (including serial port and baud rate verification)"""
+        """Instrument initialization (including serial port and baud rate verification).
+        In the event of a malfunction, return in 'warning' output an appropriated string."""
+
         self.serial = serial.Serial(serial_port, baudrate)
         initial_timeout = self.serial.timeout
         self.serial.timeout = 1  # timeout of the serial port = 1s
         ldtba = self.last_data_transfer_bytearray()
         self.serial.timeout = initial_timeout
         initialized = len(ldtba) != 0
+        warning = ""
         if initialized:
             try:
                 self.current_value()
             except ValueError as ve:
                 if ve.__str__()[0:34] == "could not convert string to float:":
-                    print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
+                    warning = "DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?"
                     initialized = False
-        else: print("DATA GRABING : no data from the instrument. Maybe the serial port is wrong ?  ")
-        return initialized
+        else: warning = "DATA GRABING : no data from the instrument. Maybe the serial port is wrong ?  "
+        return initialized, warning
 
     def current_value(self):
         """once the instrument is initialized, return its current measured value"""

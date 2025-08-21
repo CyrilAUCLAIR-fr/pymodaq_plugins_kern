@@ -82,10 +82,15 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
         if self.is_master:
             self.controller = KERN_16K0_05()
-            initialized = self.controller.connect(serial_port, baudrate)
+            initialized, warning = self.controller.connect(serial_port, baudrate)
+
         else:
             self.controller = controller
             initialized = True
+            warning = ""
+
+        if warning != "":
+            print(warning)
 
         self.dte_signal_temp.emit(DataToExport(name='Kern plugin',
                                                data=[DataFromPlugins(name='KERN FKB 16K0.05',
