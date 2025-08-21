@@ -19,15 +19,19 @@ class KERN_16K0_05:
     def __init__(self):
         self.serial = serial.Serial()
 
+    def last_data_transfer_bytearray(self):
+        """returns in a bytearray the last data transfert in buffer from the instrument"""
+        dt_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+        return bytearray(dt_reading)
+
     def connect(self, serial_port:str, baudrate:int):
         """instrument initialization (including serial port and baud rate verification)"""
         self.serial = serial.Serial(serial_port, baudrate)
         initial_timeout = self.serial.timeout
         self.serial.timeout = 1  # timeout of the serial port = 1s
-        test_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+        ldtba = self.last_data_transfer_bytearray()
         self.serial.timeout = initial_timeout
-        ba = bytearray(test_reading)
-        initialized = len(ba) != 0
+        initialized = len(ldtba) != 0
         if initialized:
             try:
                 self.current_value()
@@ -41,14 +45,9 @@ class KERN_16K0_05:
         """once the instrument is initialized, return its current measured value"""
         ser = self.serial
         ser.reset_input_buffer()
-        new_complete_byte = ser.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
-
-        ba = bytearray(new_complete_byte)
-        new_ba = ba[4:12] # ditto
-        new_bytes = bytes(new_ba)
-        new_value = float(new_bytes)
-
-        return new_value
+        ldtba = self.last_data_transfer_bytearray()
+        new_ba = ldtba[4:12] # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+        return float(new_ba)
 
     def disconnect(self):
         """close the instrument communication"""
