@@ -34,9 +34,10 @@ class KERN_16K0_05:
                 self.current_value()
             except ValueError as ve:
                 if ve.__str__()[0:34] == "could not convert string to float:":
-                    warning = "INITIALISATION TEST : impossible conversion from string to float. Maybe the baud rate is wrong ?"
+                    warning = ("INITIALISATION TEST : impossible conversion from string to float. "
+                               "Maybe the baud rate is wrong ?")
                     initialized = False
-        else: warning = "INITIALISATION TEST : no data from the instrument. Maybe the serial port is wrong ?  "
+        else: warning = ("INITIALISATION TEST : no data from the instrument. Check the instrument is well pluged and the serial port is the right one. ")
         return initialized, warning
 
     def current_value(self):
