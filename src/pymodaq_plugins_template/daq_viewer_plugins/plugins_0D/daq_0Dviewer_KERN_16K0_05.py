@@ -40,7 +40,7 @@ class KERN_16K0_05:
                 if ve.__str__()[0:34] == "could not convert string to float:":
                     print("DATA GRABING : impossible conversion from string to float. Maybe the baud rate is wrong ?")
                     initialized = False
-        else : print("DATA GRABING : no data from the instrument. Maybe the serial port is wrong ?  ")
+        else: print("DATA GRABING : no data from the instrument. Maybe the serial port is wrong ?  ")
         return initialized
 
     def current_value(self):
@@ -48,7 +48,7 @@ class KERN_16K0_05:
         ser = self.serial
         ser.reset_input_buffer()
         ldtba = self.last_data_transfer_bytearray()
-        new_ba = ldtba[4:12] # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+        new_ba = ldtba[4:13] # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
         return float(new_ba)
 
     def disconnect(self):
