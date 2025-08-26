@@ -35,7 +35,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
     available_serial_ports = [] # list of all available serial port on the used computer
     # filling of this listing :
     for port in serial.tools.list_ports.comports():
-        available_serial_ports.append(port.name)
+        available_serial_ports.append(port.device) #name)
 
     params = comon_parameters+[
         {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
@@ -82,22 +82,21 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
         if self.is_master:
             self.controller = KERN_16K0_05()
-            initialized, warning = self.controller.connect(serial_port, baudrate)
+            initialized, info = self.controller.connect(serial_port, baudrate)
 
         else:
             self.controller = controller
             initialized = True
-            warning = ""
-
-        if warning != "":
-            print(warning)
+            info = "KERN FKB 16K0.05 : Initialisation OK"
 
         self.dte_signal_temp.emit(DataToExport(name='KERN plugin',
                                                data=[DataFromPlugins(name='KERN FKB 16K0.05',
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
                                                                     labels=['mesured weight (g)'])]))
-        info = "Whatever info you want to log"
+        # info = "Whatever info you want to log"
+        if info != "":
+            print(info)
         return info, initialized
 
     def close(self):

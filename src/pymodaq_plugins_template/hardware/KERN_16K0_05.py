@@ -1,4 +1,6 @@
 import serial
+import time
+import string
 
 class KERN_16K0_05:
     # At the time of writing this code (August 2025), the documentation of this instrument was available on URL
@@ -6,6 +8,8 @@ class KERN_16K0_05:
 
     POSSIBLE_BAUD_RATES = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the instrument documentation)
     DEFAULT_BAUD_RATE = POSSIBLE_BAUD_RATES[2]
+
+    DEFAULT_TIMEOUT = 3  # seconds
 
     serial: serial.Serial
 
@@ -22,23 +26,30 @@ class KERN_16K0_05:
         """Instrument initialization (including serial port and baud rate verification).
         In the event of a malfunction, return in 'warning' output an appropriated string."""
 
-        self.serial = serial.Serial(serial_port, baudrate)
-        initial_timeout = self.serial.timeout
-        self.serial.timeout = 1  # timeout of the serial port = 1s
-        ldtba = self.last_data_transfer_bytearray()
-        self.serial.timeout = initial_timeout
-        initialized = len(ldtba) != 0
-        warning = ""
-        if initialized:
+        def validate_serial_port(response):
+            return len(response) != 0
+
+        def validate_baud_rate(response):
             try:
-                self.current_value()
-            except ValueError as ve:
-                if ve.__str__()[0:34] == "could not convert string to float:":
-                    warning = ("INITIALISATION TEST : impossible conversion from string to float. "
-                               "Maybe the baud rate is wrong ?")
-                    initialized = False
-        else: warning = ("INITIALISATION TEST : no data from the instrument. Check the instrument is well pluged and the serial port is the right one. ")
-        return initialized, warning
+                response_str = response.decode()
+                return any(c in string.printable for c in response_str)
+            except UnicodeDecodeError:
+                return False
+
+        self.serial = serial.Serial(serial_port, baudrate)
+        time.sleep(self.DEFAULT_TIMEOUT)
+        response = self.serial.read(self.serial.in_waiting) # reads all the bytes in input buffer
+        initialized = validate_serial_port(response)
+        if initialized:
+            if validate_baud_rate(response):
+                info = "KERN FKB 16K0.05 : Initialisation done on port " + serial_port + ". Baud rate = " + str(baudrate)
+                initialized = True
+            else:
+                info = "KERN FKB 16K0.05 :INITIALISATION TEST : wrong baudrate"
+                initialized = False
+        else: info = ("KERN FKB 16K0.05 : INITIALISATION TEST : "
+                      "no data from the instrument. Check the instrument is well pluged and the serial port is the right one. ")
+        return initialized, info
 
     def current_value(self):
         """once the instrument is initialized, return its current measured value"""
