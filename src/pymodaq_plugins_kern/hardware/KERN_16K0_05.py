@@ -42,13 +42,13 @@ class KERN_16K0_05:
         initialized = validate_serial_port(response)
         if initialized:
             if validate_baud_rate(response):
-                info = "KERN FKB 16K0.05 : Initialisation done on port " + serial_port + ". Baud rate = " + str(baudrate)
+                info = "KERN FKB weight balance : Initialisation done on port " + serial_port + ". Baud rate = " + str(baudrate)
                 initialized = True
             else:
-                info = "KERN FKB 16K0.05 :INITIALISATION TEST : wrong baudrate"
+                info = "KERN FKB weight balance :INITIALISATION TEST : wrong baudrate"
                 initialized = False
-        else: info = ("KERN FKB 16K0.05 : INITIALISATION TEST : "
-                      "no data from the instrument. Check the instrument is well pluged and the serial port is the right one. ")
+        else: info = ("KERN FKB weight balance : INITIALISATION TEST : "
+                      "no data from the instrument. Maybe the instrument is not pluged, or the serial port is wrong.")
         return initialized, info
 
     def current_value(self):

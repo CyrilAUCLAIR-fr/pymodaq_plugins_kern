@@ -87,10 +87,10 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         else:
             self.controller = controller
             initialized = True
-            info = "KERN FKB 16K0.05 : Initialisation OK"
+            info = "KERN FKB weight balance : Initialisation OK"
 
         self.dte_signal_temp.emit(DataToExport(name='KERN plugin',
-                                               data=[DataFromPlugins(name='KERN FKB 16K0.05',
+                                               data=[DataFromPlugins(name='KERN weight balance',
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
                                                                     labels=['mesured weight (g)'])]))
@@ -119,7 +119,7 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         # synchrone version (blocking function)
         data_tot = self.controller.current_value()
         self.dte_signal.emit(DataToExport(name='KERN plugin',
-                                        data=[DataFromPlugins(name='KERN FKB 16K0.05',
+                                        data=[DataFromPlugins(name='KERN weight balance',
                                                                 data=data_tot,
                                                                 dim='Data0D',
                                                                 labels=['mesured weight (g)'])]))
