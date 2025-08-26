@@ -7,7 +7,7 @@ from pymodaq_gui.parameter import Parameter
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.data import DataFromPlugins
 
-from pymodaq_plugins_template.hardware.KERN_16K0_05 import KERN_16K0_05
+from pymodaq_plugins_kern.hardware.KERN_16K0_05 import KERN_16K0_05
 
 import serial.tools.list_ports
 

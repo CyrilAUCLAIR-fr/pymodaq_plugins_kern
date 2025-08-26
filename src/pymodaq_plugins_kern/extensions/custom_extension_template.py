@@ -8,8 +8,8 @@ from pymodaq.utils.config import get_set_preset_path
 from pymodaq.extensions.utils import CustomExt
 
 
-# todo: replace here *pymodaq_plugins_template* by your plugin package name
-from pymodaq_plugins_template.utils import Config as PluginConfig
+# todo: replace here *pymodaq_plugins_kern* by your plugin package name
+from pymodaq_plugins_kern.utils import Config as PluginConfig
 
 logger = set_logger(get_module_name(__file__))
 

@@ -4,8 +4,8 @@ from pymodaq_gui import utils as gutils
 from pymodaq_utils.config import Config
 from pymodaq_utils.logger import set_logger, get_module_name
 
-# todo: replace here *pymodaq_plugins_template* by your plugin package name
-from pymodaq_plugins_template.utils import Config as PluginConfig
+# todo: replace here *pymodaq_plugins_kern* by your plugin package name
+from pymodaq_plugins_kern.utils import Config as PluginConfig
 
 logger = set_logger(get_module_name(__file__))
 
