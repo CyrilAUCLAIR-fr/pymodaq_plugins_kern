@@ -16,11 +16,11 @@ class KERN_572_573_KB_DS_FKB:
     def __init__(self):
         self.serial = serial.Serial()
 
-    def last_data_transfer_bytearray(self):
-        """returns in a bytearray the last data transfer in buffer from the instrument"""
-        self.serial.reset_input_buffer()
-        dt_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
-        return bytearray(dt_reading)
+    # def last_data_transfer_bytearray(self):
+    #     """returns in a bytearray the last data transfer in buffer from the instrument"""
+    #     self.serial.reset_input_buffer()
+    #     dt_reading = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+    #     return bytearray(dt_reading)
 
     def connect(self, serial_port:str, baudrate:int):
         """Instrument initialization (including serial port and baud rate verification).
@@ -53,9 +53,12 @@ class KERN_572_573_KB_DS_FKB:
 
     def current_value(self):
         """once the instrument is initialized, return its current measured value"""
-        ldtba = self.last_data_transfer_bytearray()
-        new_ba = ldtba[4:13] # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
-        return float(new_ba)
+        self.serial.reset_input_buffer()
+        data_transfer_bytes = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
+        #     return bytearray(dt_reading)
+        data_transfer_bytearray = bytearray(data_transfer_bytes) # self.last_data_transfer_bytearray()
+        mesured_value_byterray = data_transfer_bytearray[4:13] # ditto
+        return float(mesured_value_byterray)
 
     def disconnect(self):
         """close the instrument communication"""
