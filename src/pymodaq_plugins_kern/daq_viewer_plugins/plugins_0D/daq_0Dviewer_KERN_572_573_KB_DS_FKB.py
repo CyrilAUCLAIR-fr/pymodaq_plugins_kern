@@ -7,6 +7,9 @@ from pymodaq_gui.parameter import Parameter
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.data import DataFromPlugins
 
+from pymodaq.utils.logger import set_logger
+logger = set_logger('viewer0D_plugins', add_to_console=True)
+
 from pymodaq_plugins_kern.hardware.KERN_572_573_KB_DS_FKB import KERN_572_573_KB_DS_FKB
 
 import serial.tools.list_ports
@@ -82,7 +85,11 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
                                                                     labels=['mesured weight (g)'])]))
         # info = "Whatever info you want to log"
         if info != "":
-            print(info)
+            if initialized:
+                logger.info(info)
+            else:
+                logger.warning(info)
+
         return info, initialized
 
     def close(self):

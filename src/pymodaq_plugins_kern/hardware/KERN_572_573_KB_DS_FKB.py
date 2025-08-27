@@ -42,12 +42,12 @@ class KERN_572_573_KB_DS_FKB:
         initialized = validate_serial_port(input_buffer_content)
         if initialized:
             if validate_baud_rate(input_buffer_content):
-                info = "KERN weight balance : Initialisation done on port " + serial_port + ". Baud rate = " + str(baudrate)
+                info = "KERN weight balance : initialisation done on port " + serial_port + ". Baud rate = " + str(baudrate)
                 initialized = True
             else:
-                info = "KERN weight balance : INITIALISATION TEST : wrong baud rate"
+                info = "KERN weight balance : initialization test : wrong baud rate"
                 initialized = False
-        else: info = ("KERN weight balance : INITIALISATION TEST : "
+        else: info = ("KERN weight balance : initialization test : "
                       "no data from the instrument. Maybe the instrument is not plugged, or the serial port is wrong.")
         return initialized, info
 
