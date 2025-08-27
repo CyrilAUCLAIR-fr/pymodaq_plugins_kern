@@ -7,15 +7,16 @@ from pymodaq_gui.parameter import Parameter
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.data import DataFromPlugins
 
-from pymodaq_plugins_kern.hardware.KERN_16K0_05 import KERN_16K0_05
+from pymodaq_plugins_kern.hardware.KERN_572_573_KB_DS_FKB import KERN_572_573_KB_DS_FKB
 
 import serial.tools.list_ports
 
-class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
+class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
     """ Instrument plugin class for a OD viewer.
 
-    This instrument plugin concerns the FKB 16K0.05 precision balance of KERN & SOHN instruments (and has been tested
-    with such instrument).
+    This viewer concerns the 572, 573, KB, DS and FKB precision balances of KERN & SOHN instruments.
+
+    It has been tested with a FKB 16K0.05 instrument.
 
     It has been tested with PyMoDAQ 5.
 
@@ -29,8 +30,6 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         The particular object that allow the communication with the hardware, in general a python wrapper around the
          hardware library.
 
-    # TODO add your particular attributes here if any
-
     """
     available_serial_ports = [] # list of all available serial port on the used computer
     # filling of this listing :
@@ -39,28 +38,15 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
 
     params = comon_parameters+[
         {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
-        {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list', 'limits': KERN_16K0_05.POSSIBLE_BAUD_RATES, 'value': KERN_16K0_05.DEFAULT_BAUD_RATE}
+        {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list',
+         'limits': KERN_572_573_KB_DS_FKB.POSSIBLE_BAUD_RATES, 'value': KERN_572_573_KB_DS_FKB.DEFAULT_BAUD_RATE}
         ]
 
     def ini_attributes(self):
         #  autocompletion
-        self.controller: KERN_16K0_05 = None
+        self.controller: KERN_572_573_KB_DS_FKB = None
 
         pass
-
-    def commit_settings(self, param: Parameter):
-        """Apply the consequences of a change of value in the detector settings
-
-        Parameters
-        ----------
-        param: Parameter
-            A given parameter (within detector_settings) whose value has been changed by the user
-        """
-        ## TODO for your custom plugin
-        if param.name() == "a_parameter_you've_added_in_self.params":
-           self.controller.your_method_to_apply_this_param_change()  # when writing your own plugin replace this line
-#        elif ...
-        ##
 
     def ini_detector(self, controller=None):
         """Detector communication initialization
@@ -81,13 +67,13 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
         baudrate = self.settings['baudrate']
 
         if self.is_master:
-            self.controller = KERN_16K0_05()
+            self.controller = KERN_572_573_KB_DS_FKB()
             initialized, info = self.controller.connect(serial_port, baudrate)
 
         else:
             self.controller = controller
             initialized = True
-            info = "KERN FKB weight balance : Initialisation OK"
+            info = "KERN weight balance : Initialisation OK"
 
         self.dte_signal_temp.emit(DataToExport(name='KERN plugin',
                                                data=[DataFromPlugins(name='KERN weight balance',
@@ -116,22 +102,13 @@ class DAQ_0DViewer_KERN_16K0_05(DAQ_Viewer_base):
             others optionals arguments
         """
 
-        # synchrone version (blocking function)
+        # synchrone method (blocking function)
         data_tot = self.controller.current_value()
         self.dte_signal.emit(DataToExport(name='KERN plugin',
                                         data=[DataFromPlugins(name='KERN weight balance',
                                                                 data=data_tot,
                                                                 dim='Data0D',
                                                                 labels=['mesured weight (g)'])]))
-
-
-
-    def callback(self):
-        """optional asynchrone method called when the detector has finished its acquisition of data"""
-        data_tot = self.controller.your_method_to_get_data_from_buffer()
-        self.dte_signal.emit(DataToExport(name='myplugin',
-                                          data=[DataFromPlugins(name='Mock1', data=data_tot,
-                                                                dim='Data0D', labels=['dat0', 'data1'])]))
 
     def stop(self):
         """Stop the current grab hardware wise if necessary"""

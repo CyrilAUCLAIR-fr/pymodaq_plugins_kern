@@ -2,7 +2,7 @@ import serial
 import time
 import string
 
-class KERN_16K0_05:
+class KERN_572_573_KB_DS_FKB:
     # At the time of writing this code (August 2025), the documentation of this instrument was available on URL
     # https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
