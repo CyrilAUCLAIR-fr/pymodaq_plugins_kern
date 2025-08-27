@@ -9,7 +9,7 @@ class KERN_572_573_KB_DS_FKB:
     POSSIBLE_BAUD_RATES = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the instrument documentation)
     DEFAULT_BAUD_RATE = POSSIBLE_BAUD_RATES[2]
 
-    DEFAULT_TIMEOUT = 3  # seconds
+    WAITING_TIME = 3  # time (in s) to let the input buffer fill in order to test the initialization
 
     serial: serial.Serial
 
@@ -26,26 +26,27 @@ class KERN_572_573_KB_DS_FKB:
         """Instrument initialization (including serial port and baud rate verification).
         In the event of a malfunction, return in 'warning' output an appropriated string."""
 
-        def validate_serial_port(response):
-            return len(response) != 0
+        def validate_serial_port(input_buffer_reading):
+            """"""
+            return len(input_buffer_reading) != 0
 
-        def validate_baud_rate(response):
+        def validate_baud_rate(input_buffer_reading):
             try:
-                response_str = response.decode()
-                return any(c in string.printable for c in response_str)
+                decoded_input_buffer = input_buffer_reading.decode()
+                return any(c in string.printable for c in decoded_input_buffer)
             except UnicodeDecodeError:
                 return False
 
         self.serial = serial.Serial(serial_port, baudrate)
-        time.sleep(self.DEFAULT_TIMEOUT)
-        response = self.serial.read(self.serial.in_waiting) # reads all the bytes in input buffer
-        initialized = validate_serial_port(response)
+        time.sleep(self.WAITING_TIME)
+        input_buffer_reading = self.serial.read(self.serial.in_waiting) # reads all the bytes in input buffer
+        initialized = validate_serial_port(input_buffer_reading)
         if initialized:
-            if validate_baud_rate(response):
+            if validate_baud_rate(input_buffer_reading):
                 info = "KERN FKB weight balance : Initialisation done on port " + serial_port + ". Baud rate = " + str(baudrate)
                 initialized = True
             else:
-                info = "KERN FKB weight balance :INITIALISATION TEST : wrong baudrate"
+                info = "KERN FKB weight balance :INITIALISATION TEST : wrong baud rate"
                 initialized = False
         else: info = ("KERN FKB weight balance : INITIALISATION TEST : "
                       "no data from the instrument. Maybe the instrument is not pluged, or the serial port is wrong.")
