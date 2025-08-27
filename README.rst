@@ -53,7 +53,7 @@ Actuators
 Viewer0D
 ++++++++
 
-* **daq_0Dviewer_Kern_16K0_05**: control of FBK 16K0.05 0D detector (weight balance)
+* **daq_0Dviewer_Kern_16K0_05**: control of 572, 573, KB, DS and FKB 0D detector (weight balance)
 
 Viewer1D
 ++++++++
