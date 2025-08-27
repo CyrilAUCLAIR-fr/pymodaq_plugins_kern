@@ -3,7 +3,7 @@ import time
 import string
 
 class KERN_572_573_KB_DS_FKB:
-    # At the time of writing this code (August 2025), the documentation of this instrument was available on URL
+    # At the time of writing this code (August 2025), the documentation of these instruments was available on URL
     # https://dok.kern-sohn.com/manuals/files/English/572-573-KB-DS-FKB-FCB-KBJ-BA-e-1774.pdf .
 
     POSSIBLE_BAUD_RATES = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the instrument documentation)
@@ -27,7 +27,6 @@ class KERN_572_573_KB_DS_FKB:
         In the event of a malfunction, return in 'warning' output an appropriated string."""
 
         def validate_serial_port(input_buffer_reading):
-            """"""
             return len(input_buffer_reading) != 0
 
         def validate_baud_rate(input_buffer_reading):
