@@ -37,7 +37,7 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
     available_serial_ports = [] # list of all available serial port on the used computer
     # filling of this listing :
     for port in serial.tools.list_ports.comports():
-        available_serial_ports.append(port.device) #name)
+        available_serial_ports.append(port.device)
 
     params = comon_parameters+[
         {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
@@ -83,7 +83,6 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
                                                                     labels=['mesured weight (g)'])]))
-        # info = "Whatever info you want to log"
         if info != "":
             if initialized:
                 logger.info(info)
