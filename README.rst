@@ -25,20 +25,7 @@ Use this template to create a repository on your account and start the developme
 Authors
 =======
 
-* First Author  (myemail@xxx.org)
-* Other author (myotheremail@xxx.org)
-
-.. if needed use this field
-
-    Contributors
-    ============
-
-    * First Contributor
-    * Other Contributors
-
-.. if needed use this field
-
-  Depending on the plugin type, delete/complete the fields below
+* Cyril Auclair  (cyril.auclair@insa-lyon.fr)
 
 
 Instruments
@@ -53,7 +40,7 @@ Actuators
 Viewer0D
 ++++++++
 
-* **daq_0Dviewer_Kern_16K0_05**: control of 572, 573, KB, DS and FKB 0D detector (weight balance)
+* **daq_0Dviewer_Kern_572_573_KB_DS_FKB**: control of 572, 573, KB, DS and FKB 0D detectors (weight balances)
 
 Viewer1D
 ++++++++
