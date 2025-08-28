@@ -13,7 +13,6 @@ name = "pymodaq_plugins_kern"
 description = 'instrument instrument dedicated to KERN & SOHN manufacturer'
 dependencies = [
     "pymodaq>=5.0.0", "pyqt>=6.0", "pyserial"
-    #todo: list here all dependencies your package may have
 ]
 
 authors = [
