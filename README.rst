@@ -19,9 +19,6 @@ pymodaq_plugins_Kern
     :target: https://github.com/PyMoDAQ/pymodaq_plugins_template/actions/workflows/Test.yml
 
 
-Use this template to create a repository on your account and start the development of your own PyMoDAQ plugin!
-
-
 Authors
 =======
 
