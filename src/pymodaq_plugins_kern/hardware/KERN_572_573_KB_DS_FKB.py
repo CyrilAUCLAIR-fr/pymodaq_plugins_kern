@@ -50,8 +50,8 @@ class KERN_572_573_KB_DS_FKB:
         self.serial.reset_input_buffer()
         data_transfer_bytes = self.serial.read(18) # cf. section 7.5.1 "Description of the data transfer" of the instrument documentation
         data_transfer_bytearray = bytearray(data_transfer_bytes)
-        mesured_value_bytearray = data_transfer_bytearray[4:13] # ditto
-        return float(mesured_value_bytearray)
+        measured_value_bytearray = data_transfer_bytearray[4:13] # ditto
+        return float(measured_value_bytearray)
 
     def disconnect(self):
         """close the instrument communication"""
