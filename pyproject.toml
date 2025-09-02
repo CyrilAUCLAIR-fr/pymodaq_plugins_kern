@@ -12,7 +12,7 @@ package-url = 'https://github.com/PyMoDAQ/pymodaq_plugins_kern'
 name = "pymodaq_plugins_kern"
 description = 'instrument instrument dedicated to KERN & SOHN manufacturer'
 dependencies = [
-    "pymodaq>=5.0.0", "pyqt>=6.0", "pyserial"
+    "pymodaq>=5.0.0", "pyserial"
 ]
 
 authors = [
