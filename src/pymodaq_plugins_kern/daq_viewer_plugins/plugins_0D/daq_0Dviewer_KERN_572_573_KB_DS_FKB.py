@@ -42,7 +42,8 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
     params = comon_parameters+[
         {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
         {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list',
-         'limits': KERN_572_573_KB_DS_FKB.POSSIBLE_BAUD_RATES, 'value': KERN_572_573_KB_DS_FKB.DEFAULT_BAUD_RATE}
+         'limits': KERN_572_573_KB_DS_FKB.POSSIBLE_BAUD_RATES, 'value': KERN_572_573_KB_DS_FKB.DEFAULT_BAUD_RATE},
+        {'title': 'Measurement unit', 'name': 'measurement_unit', 'type': 'str', 'value': 'g'}
         ]
 
     def ini_attributes(self):
@@ -82,7 +83,7 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
                                                data=[DataFromPlugins(name='KERN weight balance',
                                                                     data=[np.array([0])],
                                                                     dim='Data0D',
-                                                                    labels=['mesured weight (g)'])]))
+                                                                    labels=['mesured weight (' + self.settings['measurement_unit'] + ')'])]))
         if info != "":
             if initialized:
                 logger.info(info)
@@ -90,6 +91,8 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
                 logger.warning(info)
 
         return info, initialized
+
+
 
     def close(self):
         """Terminate the communication protocol"""
@@ -114,7 +117,7 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
                                         data=[DataFromPlugins(name='KERN weight balance',
                                                                 data=data_tot,
                                                                 dim='Data0D',
-                                                                labels=['mesured weight (g)'])]))
+                                                                labels=['mesured weight (' + self.settings['measurement_unit'] + ')'])]))
 
     def stop(self):
         """Stop the current grab hardware wise if necessary"""
