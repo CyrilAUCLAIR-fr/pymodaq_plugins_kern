@@ -114,10 +114,10 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
         """
 
         # synchrone method (blocking function)
-        data_tot = self.controller.current_value()
+        current_measured_value = self.controller.current_value()
         self.dte_signal.emit(DataToExport(name='KERN plugin',
                                         data=[DataFromPlugins(name='KERN weight balance',
-                                                                data=data_tot, units=self.settings['measurement_unit'],
+                                                                data=current_measured_value, units=self.settings['measurement_unit'],
                                                                 dim='Data0D',
                                                                 labels=['measured weight (' + self.settings['measurement_unit'] + ')'])]))
 
