@@ -43,7 +43,9 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
         {'title': 'Serial Port', 'name': 'serial_port', 'type': 'list', 'limits': available_serial_ports},
         {'title': 'Baud rate', 'name': 'baudrate', 'type': 'list',
          'limits': KERN_572_573_KB_DS_FKB.POSSIBLE_BAUD_RATES, 'value': KERN_572_573_KB_DS_FKB.DEFAULT_BAUD_RATE},
-        {'title': 'Measurement unit', 'name': 'measurement_unit', 'type': 'str', 'value': 'g'}
+        {'title': 'Measurement unit', 'name': 'measurement_unit', 'type': 'list',
+         'limits': KERN_572_573_KB_DS_FKB.AVAILABLE_MEASUREMENT_UNITS,
+         'value': KERN_572_573_KB_DS_FKB.DEFAULT_MEASUREMENT_UNIT}
         ]
 
     def ini_attributes(self):
@@ -115,9 +117,9 @@ class DAQ_0DViewer_KERN_572_573_KB_DS_FKB(DAQ_Viewer_base):
         data_tot = self.controller.current_value()
         self.dte_signal.emit(DataToExport(name='KERN plugin',
                                         data=[DataFromPlugins(name='KERN weight balance',
-                                                                data=data_tot,
+                                                                data=data_tot, units=self.settings['measurement_unit'],
                                                                 dim='Data0D',
-                                                                labels=['mesured weight (' + self.settings['measurement_unit'] + ')'])]))
+                                                                labels=['measured weight (' + self.settings['measurement_unit'] + ')'])]))
 
     def stop(self):
         """Stop the current grab hardware wise if necessary"""

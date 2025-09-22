@@ -9,6 +9,11 @@ class KERN_572_573_KB_DS_FKB:
     POSSIBLE_BAUD_RATES = [2400, 4800, 9600, 19200] # list of all baud rate ajustable (cf. section 7.4 "Interface RS 232 C" of the instrument documentation)
     DEFAULT_BAUD_RATE = POSSIBLE_BAUD_RATES[2]
 
+    AVAILABLE_MEASUREMENT_UNITS = ['g', 'kg', 'oz', 'ozt', '*', 'dwt', 'g_n', 'lb',
+                                  'ct', 't', 'tlT', 'tlH', 'tlM', 'tlS', 'tL', 'mo',
+                                  'm', 'b', 'o'] # cf. section 1 "MODE - MENUE" of the instrument documentation
+    DEFAULT_MEASUREMENT_UNIT = AVAILABLE_MEASUREMENT_UNITS[0]
+
     WAITING_TIME = 3  # time (in s) to let the input buffer fill in order to test the initialization
 
     serial: serial.Serial
